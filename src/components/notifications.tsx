@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot, writeBatch, getDocs, orderBy } from "firebase/firestore";
+import { collection, query, where, onSnapshot, writeBatch, getDocs } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -38,12 +38,14 @@ export function Notifications() {
 
     const q = query(
         collection(db, "notifications"), 
-        where("artisanId", "==", user.uid),
-        orderBy("timestamp", "desc")
+        where("artisanId", "==", user.uid)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedNotifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+      // Sort client-side to avoid needing a composite index
+      fetchedNotifications.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+      
       setNotifications(fetchedNotifications);
       const unread = fetchedNotifications.filter(n => n.status === 'unread').length;
       setUnreadCount(unread);
