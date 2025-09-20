@@ -29,6 +29,9 @@ function NavLinks() {
       <Link href="/explore" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
         {t('nav_explore')}
       </Link>
+      <Link href="/paarvai-ai" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+        {t('nav_paarvai_ai')}
+      </Link>
       <Link href="/for-artisans" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
         For Artisans
       </Link>
