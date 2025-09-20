@@ -26,6 +26,7 @@ export default function ForArtisansPage() {
       // Update the user's role to 'artisan'
       await setDoc(userDocRef, { 
         role: 'artisan',
+        verificationStatus: 'pending',
        }, { merge: true });
       
       await fetchProfile(); // Re-fetch profile to update context

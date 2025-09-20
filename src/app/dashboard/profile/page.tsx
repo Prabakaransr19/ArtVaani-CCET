@@ -18,6 +18,7 @@ import { Loader2, Camera, MapPin, UserCheck, ShieldAlert } from 'lucide-react';
 import type { UserProfile, VerifyArtisanIdentityInput } from '@/lib/types';
 import { verifyArtisanIdentity } from '@/ai/flows/verify-artisan-identity';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { ArtistStatusBadge } from '@/components/artist-status-badge';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -27,12 +28,12 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth();
+  const { user, loading, profile: authProfile, fetchProfile } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(authProfile);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -42,22 +43,15 @@ export default function ProfilePage() {
     resolver: zodResolver(profileSchema),
   });
 
-  // Fetch profile data
+  // Sync auth profile to local state
   useEffect(() => {
-    if (user) {
-      const fetchProfile = async () => {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const data = userDoc.data() as UserProfile;
-          setProfile(data);
-          setValue('name', data.name);
-          setValue('city', data.city);
-        }
-      };
-      fetchProfile();
+    setProfile(authProfile);
+    if(authProfile){
+        setValue('name', authProfile.name);
+        setValue('city', authProfile.city);
     }
-  }, [user, setValue]);
+  }, [authProfile, setValue]);
+  
 
   // Request camera permission
   useEffect(() => {
@@ -78,7 +72,7 @@ export default function ProfilePage() {
         });
       }
     };
-    if(profile && !profile.verified) {
+    if(profile && profile.verificationStatus !== 'verified') {
         getCameraPermission();
     }
     // Cleanup function to stop video stream
@@ -134,10 +128,14 @@ export default function ProfilePage() {
                 location: { latitude, longitude }
             };
             const result = await verifyArtisanIdentity(input);
+            
+            const newStatus = result.verified ? 'verified' : 'flagged';
+            await setDoc(doc(db, 'users', user.uid), { verificationStatus: newStatus }, { merge: true });
+            
+            // Manually update profile state before context re-fetches
+            setProfile(prev => prev ? {...prev, verificationStatus: newStatus} : null);
 
             if (result.verified) {
-                await setDoc(doc(db, 'users', user.uid), { verified: true }, { merge: true });
-                setProfile(prev => prev ? {...prev, verified: true} : null);
                 toast({ title: "Verification Successful!", description: "You are now a verified artisan." });
             } else {
                 toast({ variant: 'destructive', title: "Verification Failed", description: result.reason });
@@ -164,12 +162,7 @@ export default function ProfilePage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Your Profile</h1>
-        {profile.verified && (
-            <div className="flex items-center gap-2 text-green-600 bg-green-100 px-4 py-2 rounded-full">
-                <UserCheck className="h-5 w-5"/>
-                <span className="font-semibold">Verified Artisan</span>
-            </div>
-        )}
+        <ArtistStatusBadge status={profile.verificationStatus} />
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">
@@ -203,7 +196,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="md:col-span-2">
-          {profile.verified ? (
+          {profile.verificationStatus === 'verified' ? (
             <Card className="rounded-2xl soft-shadow bg-green-50 border-green-200">
                 <CardHeader>
                     <CardTitle>Identity Verified</CardTitle>
@@ -217,6 +210,15 @@ export default function ProfilePage() {
                 <CardDescription>To ensure authenticity, please complete this one-time verification step.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {profile.verificationStatus === 'flagged' && (
+                    <Alert variant="destructive">
+                        <ShieldAlert className="h-4 w-4" />
+                        <AlertTitle>Verification Failed</AlertTitle>
+                        <AlertDescription>
+                            Your previous verification attempt was not successful. Please try again, ensuring your face is clear and you are in the correct location.
+                        </AlertDescription>
+                    </Alert>
+                )}
                 <div className="relative">
                   <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
                   <canvas ref={canvasRef} className="hidden"></canvas>

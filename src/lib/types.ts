@@ -2,6 +2,8 @@
 import { FieldValue, Timestamp } from 'firebase/firestore';
 import { z } from 'zod';
 
+export type ArtistVerificationStatus = 'verified' | 'pending' | 'flagged';
+
 export interface Review {
   id: string;
   userId: string;
@@ -60,7 +62,7 @@ export interface UserProfile {
     city: string;
     phone: string;
     role: 'buyer' | 'artisan';
-    verified: boolean;
+    verificationStatus: ArtistVerificationStatus;
     cart: UserCartItem[];
     purchasedProductIds?: string[];
     profileImage: string;

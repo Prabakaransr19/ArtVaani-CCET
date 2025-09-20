@@ -6,9 +6,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingBasket, User, UserCheck, ShieldAlert, DollarSign } from "lucide-react";
+import { LayoutDashboard, ShoppingBasket, User, ShieldAlert, DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Notifications } from "@/components/notifications";
+import { ArtistStatusBadge } from "@/components/artist-status-badge";
 
 export default function DashboardLayout({
   children,
@@ -77,10 +78,8 @@ export default function DashboardLayout({
                       </Link>
                   ))}
                    <div className="p-4 mt-4 border-t">
-                    {profile.verified ? (
-                      <div className="flex items-center text-green-600">
-                        <UserCheck className="mr-2"/> Verified
-                      </div>
+                    {profile.verificationStatus === 'verified' ? (
+                      <ArtistStatusBadge status={profile.verificationStatus} />
                     ) : (
                        <Link href="/dashboard/profile">
                           <Button variant="outline" className="w-full justify-start text-amber-600 border-amber-300 hover:bg-amber-50 rounded-xl">

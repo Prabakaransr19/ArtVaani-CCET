@@ -58,7 +58,7 @@ export default function ProfileSetupPage() {
         city: data.city,
         phone: data.phone,
         role: 'buyer', // Default role
-        verified: false,
+        verificationStatus: 'pending',
         cart: [],
         purchasedProductIds: [],
         profileImage: user.photoURL || '',

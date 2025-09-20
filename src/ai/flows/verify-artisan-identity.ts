@@ -113,4 +113,3 @@ const verifyArtisanIdentityFlow = ai.defineFlow(
     return output;
   }
 );
-

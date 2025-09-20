@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Loader2, ShoppingCart, UserCheck } from 'lucide-react';
+import { Loader2, ShoppingCart } from 'lucide-react';
 import { doc, getDoc, collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from '@/lib/types';
@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { ReviewForm } from '@/components/review-form';
 import { ProductReviews } from '@/components/product-reviews';
 import { SimilarProducts } from '@/components/similar-products';
+import { ArtistStatusBadge } from '@/components/artist-status-badge';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -119,9 +120,9 @@ export default function ProductDetailPage() {
           <h1 className="text-4xl font-headline">{title}</h1>
           
           {artisan && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
                 <p className="text-lg text-muted-foreground">by <span className="font-semibold text-primary">{artisan.name}</span> from {artisan.city}</p>
-                {artisan.verified && <UserCheck className="h-5 w-5 text-green-500" title="Verified Artisan"/>}
+                <ArtistStatusBadge status={artisan.verificationStatus} />
             </div>
           )}
 
