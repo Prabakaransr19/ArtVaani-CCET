@@ -1,0 +1,19 @@
+{
+  "appName": "ArtVaani",
+  "nav_products": "Products",
+  "nav_explore": "Explore",
+  "nav_dashboard": "Dashboard",
+  "nav_login": "Login",
+  "nav_logout": "Logout",
+  "home_hero_title": "Weaving Stories, Selling Art.",
+  "home_hero_subtitle": "A platform that empowers artisans by connecting their craft to a global audience through the power of stories and AI.",
+  "home_hero_cta": "Explore Collection",
+  "featured_products_title": "Featured Products",
+  "story_assistant_title": "Your Story, Amplified",
+  "story_assistant_desc": "Don't just sell a product, sell a story. Our AI assistant helps you record and refine the cultural narrative behind your craft, connecting with customers on a deeper level.",
+  "story_assistant_cta": "Tell Your Story",
+  "insights_explorer_title": "Discover the Heritage",
+  "insights_explorer_desc": "Journey through the rich history and cultural significance of artisanal crafts. Our AI-powered explorer provides deep insights into the traditions that shape every masterpiece.",
+  "insights_explorer_cta": "Explore Crafts",
+  "add_to_cart": "Add to Cart"
+}

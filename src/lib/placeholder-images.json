@@ -1,0 +1,58 @@
+{
+  "placeholderImages": [
+    {
+      "id": "1",
+      "description": "A hand-painted ceramic vase with traditional motifs.",
+      "imageUrl": "https://picsum.photos/seed/artvaani1/600/600",
+      "imageHint": "ceramic vase"
+    },
+    {
+      "id": "2",
+      "description": "A soft and warm pashmina shawl with intricate patterns.",
+      "imageUrl": "https://picsum.photos/seed/artvaani2/600/600",
+      "imageHint": "pashmina shawl"
+    },
+    {
+      "id": "3",
+      "description": "A traditional brass lamp with detailed carvings.",
+      "imageUrl": "https://picsum.photos/seed/artvaani3/600/600",
+      "imageHint": "brass lamp"
+    },
+    {
+      "id": "4",
+      "description": "A vibrant Madhubani painting.",
+      "imageUrl": "https://picsum.photos/seed/artvaani4/600/600",
+      "imageHint": "madhubani painting"
+    },
+    {
+      "id": "5",
+      "description": "A hand-carved wooden elephant figurine.",
+      "imageUrl": "https://picsum.photos/seed/artvaani5/600/600",
+      "imageHint": "wooden elephant"
+    },
+    {
+      "id": "6",
+      "description": "A rustic terracotta pot inspired by ancient warrior figures.",
+      "imageUrl": "https://picsum.photos/seed/artvaani6/600/600",
+      "imageHint": "terracotta pot"
+    },
+    {
+      "id": "hero",
+      "description": "A potter's hands shaping clay on a wheel.",
+      "imageUrl": "https://picsum.photos/seed/artvaanihero/1200/800",
+      "imageHint": "potter hands"
+    },
+    {
+      "id": "storytelling",
+      "description": "An elderly artisan woman with a warm smile.",
+      "imageUrl": "https://picsum.photos/seed/artvaanistory/800/600",
+      "imageHint": "artisan woman"
+    },
+    {
+      "id": "insights",
+      "description": "Close-up of intricate textile patterns.",
+      "imageUrl": "https://images.unsplash.com/photo-1755011310363-0d343de874cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcnRpc3QlMjBoZXJpdGFnZXxlbnwwfHx8fDE3NTgzNjM5NDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "textile pattern"
+    }
+  ]
+}

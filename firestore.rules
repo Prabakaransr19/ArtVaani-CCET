@@ -1,0 +1,13 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // WARNING: These rules are completely open and not secure.
+    // This is for development purposes only to bypass permission errors.
+    // You should secure your data before deploying to production.
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
