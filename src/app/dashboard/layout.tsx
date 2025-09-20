@@ -95,33 +95,37 @@ export default function DashboardLayout({
       </div>
     );
   }
+  
+  const MobileNav = () => (
+    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="icon">
+          <Menu />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left">
+        <SheetHeader>
+          <SheetTitle className="sr-only">Dashboard Menu</SheetTitle>
+        </SheetHeader>
+        <NavLinks isSheet={true} />
+      </SheetContent>
+    </Sheet>
+  );
+  
+  const DesktopNav = () => (
+      <aside className="md:col-span-1">
+        <NavLinks />
+      </aside>
+  );
 
   return (
     <div className="container py-8">
       <div className="flex justify-between md:justify-end mb-4">
-        {isMobile && (
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Menu />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle className="sr-only">Dashboard Menu</SheetTitle>
-              </SheetHeader>
-              <NavLinks isSheet={true} />
-            </SheetContent>
-          </Sheet>
-        )}
+        {isMobile && <MobileNav />}
         <Notifications />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {!isMobile && (
-          <aside className="md:col-span-1">
-            <NavLinks />
-          </aside>
-        )}
+        {!isMobile && <DesktopNav />}
         <main className="md:col-span-3">
           {children}
         </main>
