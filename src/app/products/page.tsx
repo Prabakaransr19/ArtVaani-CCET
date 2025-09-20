@@ -61,7 +61,7 @@ export default function ProductsPage() {
         case 'price-asc':
           return priceA - priceB;
         case 'price-desc':
-          return priceB - priceA;
+          return priceB - a.aiPrice;
         case 'oldest':
           return dateA - dateB;
         case 'newest':
@@ -81,7 +81,7 @@ export default function ProductsPage() {
 
   return (
     <div className="container py-12">
-      <div className="text-center mb-12">
+      <div className="text-center mb-8 md:mb-12">
         <h1 className="text-4xl md:text-5xl font-headline">Our Collection</h1>
         <p className="text-muted-foreground mt-2">Explore handcrafted treasures from talented artisans.</p>
       </div>
@@ -98,7 +98,7 @@ export default function ProductsPage() {
       />
 
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="space-y-4">
               <Skeleton className="h-[300px] w-full rounded-2xl" />
@@ -108,13 +108,16 @@ export default function ProductsPage() {
           ))}
         </div>
       ) : filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       ) : (
-        <p className="text-center text-muted-foreground mt-16">No products match your filters. Try clearing them to see more.</p>
+        <div className="text-center text-muted-foreground mt-16">
+            <p>No products match your filters.</p>
+            <Button variant="link" onClick={handleResetFilters}>Clear filters</Button>
+        </div>
       )}
     </div>
   );
