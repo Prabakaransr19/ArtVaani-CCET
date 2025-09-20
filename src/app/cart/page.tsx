@@ -92,7 +92,7 @@ export default function CartPage() {
       await clearCart();
       setOrderPlaced(true);
 
-    } catch (error) => {
+    } catch (error) {
       console.error("Error placing order: ", error);
       toast({ variant: 'destructive', title: 'Order Failed', description: 'There was an issue placing your order.' });
     } finally {
