@@ -62,6 +62,11 @@ export default function DashboardLayout({
   const router = useRouter();
   const isMobile = useIsMobile();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -83,7 +88,7 @@ export default function DashboardLayout({
   }, [user, profile, loading, router]);
 
 
-  if (loading || !profile || profile.role !== 'artisan') {
+  if (loading || !profile || profile.role !== 'artisan' || !isClient) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <p>Loading your dashboard...</p>
