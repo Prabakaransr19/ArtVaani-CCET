@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot, writeBatch, getDocs } from "firebase/firestore";
+import { collection, query, where, onSnapshot, writeBatch, getDocs, orderBy } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
