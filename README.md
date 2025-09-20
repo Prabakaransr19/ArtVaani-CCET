@@ -67,4 +67,3 @@ Customers get a seamless shopping experience enriched with cultural context.
 
 ---
 
-This project was built in **Firebase Studio**.
