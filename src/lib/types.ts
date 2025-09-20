@@ -1,5 +1,4 @@
 
-
 import { FieldValue, Timestamp } from 'firebase/firestore';
 import { z } from 'zod';
 
@@ -109,3 +108,14 @@ export const VerifyArtisanIdentityOutputSchema = z.object({
     reason: z.string().describe('The reason for the verification decision.'),
 });
 export type VerifyArtisanIdentityOutput = z.infer<typeof VerifyArtisanIdentityOutputSchema>;
+
+export interface Notification {
+    id: string;
+    artisanId: string;
+    orderId: string;
+    productName: string;
+    quantity: number;
+    buyerName: string;
+    timestamp: Timestamp;
+    status: 'read' | 'unread';
+}

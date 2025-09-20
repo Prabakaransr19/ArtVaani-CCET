@@ -11,12 +11,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, writeBatch, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import type { Product } from "@/lib/types";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, totalPrice, itemCount, loading, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -38,11 +39,13 @@ export default function CartPage() {
   }
 
   const handleCheckout = async () => {
-    if (!user || cart.length === 0) {
+    if (!user || !profile || cart.length === 0) {
       toast({ variant: 'destructive', title: 'Cannot proceed', description: 'Your cart is empty or you are not logged in.' });
       return;
     }
     setIsProcessing(true);
+    const batch = writeBatch(db);
+
     try {
       const orderData = {
         userId: user.uid,
@@ -57,18 +60,39 @@ export default function CartPage() {
         status: 'Processing',
       };
       
-      await addDoc(collection(db, 'orders'), orderData);
+      const orderRef = doc(collection(db, 'orders'));
+      batch.set(orderRef, orderData);
       
       // Add purchased product IDs to user profile
       const userDocRef = doc(db, 'users', user.uid);
-      await updateDoc(userDocRef, {
+      batch.update(userDocRef, {
         purchasedProductIds: arrayUnion(...cart.map(item => item.id))
       });
 
+      // Create notifications for each artisan
+      for (const item of cart) {
+        const productRef = doc(db, 'products', item.id);
+        const productSnap = await getDoc(productRef); // Not in batch to get artisanId
+        if (productSnap.exists()) {
+            const product = productSnap.data() as Product;
+            const notificationRef = doc(collection(db, 'notifications'));
+            batch.set(notificationRef, {
+                artisanId: product.artisanId,
+                orderId: orderRef.id,
+                productName: getProductTitle(item),
+                quantity: item.quantity,
+                buyerName: profile.name,
+                timestamp: serverTimestamp(),
+                status: 'unread',
+            });
+        }
+      }
+
+      await batch.commit();
       await clearCart();
       setOrderPlaced(true);
 
-    } catch (error) {
+    } catch (error) => {
       console.error("Error placing order: ", error);
       toast({ variant: 'destructive', title: 'Order Failed', description: 'There was an issue placing your order.' });
     } finally {

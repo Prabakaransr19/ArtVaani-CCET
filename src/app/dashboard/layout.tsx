@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, ShoppingBasket, User, UserCheck, ShieldAlert, DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Notifications } from "@/components/notifications";
 
 export default function DashboardLayout({
   children,
@@ -58,39 +59,42 @@ export default function DashboardLayout({
 
   return (
     <div className="container py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <aside className="md:col-span-1">
-                <nav className="flex flex-col space-y-2">
-                    {menuItems.map((item) => (
-                        <Link href={item.href} key={item.href}>
-                           <Button 
-                             variant={pathname === item.href ? "default" : "ghost"}
-                             className="w-full justify-start rounded-xl"
-                           >
-                              <item.icon className="mr-2"/>
-                              {item.label}
-                           </Button>
-                        </Link>
-                    ))}
-                     <div className="p-4 mt-4 border-t">
-                      {profile.verified ? (
-                        <div className="flex items-center text-green-600">
-                          <UserCheck className="mr-2"/> Verified
-                        </div>
-                      ) : (
-                         <Link href="/dashboard/profile">
-                            <Button variant="outline" className="w-full justify-start text-amber-600 border-amber-300 hover:bg-amber-50 rounded-xl">
-                              <ShieldAlert className="mr-2"/> Verify ID
-                           </Button>
-                         </Link>
-                      )}
-                    </div>
-                </nav>
-            </aside>
-            <main className="md:col-span-3">
-              {children}
-            </main>
-        </div>
+      <div className="flex justify-end mb-4">
+        <Notifications />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <aside className="md:col-span-1">
+              <nav className="flex flex-col space-y-2">
+                  {menuItems.map((item) => (
+                      <Link href={item.href} key={item.href}>
+                         <Button 
+                           variant={pathname === item.href ? "default" : "ghost"}
+                           className="w-full justify-start rounded-xl"
+                         >
+                            <item.icon className="mr-2"/>
+                            {item.label}
+                         </Button>
+                      </Link>
+                  ))}
+                   <div className="p-4 mt-4 border-t">
+                    {profile.verified ? (
+                      <div className="flex items-center text-green-600">
+                        <UserCheck className="mr-2"/> Verified
+                      </div>
+                    ) : (
+                       <Link href="/dashboard/profile">
+                          <Button variant="outline" className="w-full justify-start text-amber-600 border-amber-300 hover:bg-amber-50 rounded-xl">
+                            <ShieldAlert className="mr-2"/> Verify ID
+                         </Button>
+                       </Link>
+                    )}
+                  </div>
+              </nav>
+          </aside>
+          <main className="md:col-span-3">
+            {children}
+          </main>
+      </div>
     </div>
   );
 }
