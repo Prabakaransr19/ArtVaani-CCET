@@ -6,3 +6,4 @@ import '@/ai/flows/generate-product-listing.ts';
 import '@/ai/flows/craft-cultural-insights.ts';
 import '@/ai/flows/verify-artisan-identity.ts';
 import '@/ai/flows/transcribe-audio.ts';
+import '@/ai/flows/suggest-decorations.ts';
