@@ -56,7 +56,19 @@ const generateProductListingFlow = ai.defineFlow(
     outputSchema: GenerateProductListingOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      return output!;
+    } catch (e: any) {
+      console.error('AI Generation Failed:', e.message);
+      // Return placeholder data to prevent app from crashing if API is not enabled.
+      // This is a temporary workaround.
+      return {
+        aiTitle: "AI Generation Failed: Title",
+        aiStory: "The AI service is currently unavailable. Please ensure the 'Generative Language API' is enabled in your Google Cloud project. This is placeholder content.",
+        aiPrice: 100,
+        aiTags: ["sample", "placeholder"],
+      };
+    }
   }
 );
