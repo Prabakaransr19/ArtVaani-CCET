@@ -10,7 +10,7 @@ import { LayoutDashboard, ShoppingBasket, User, ShieldAlert, DollarSign, Menu } 
 import { cn } from "@/lib/utils";
 import { Notifications } from "@/components/notifications";
 import { ArtistStatusBadge } from "@/components/artist-status-badge";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const NavLinks = ({ isSheet = false }: { isSheet?: boolean }) => {
@@ -102,6 +102,9 @@ export default function DashboardLayout({
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Dashboard Menu</SheetTitle>
+              </SheetHeader>
               <NavLinks isSheet={true} />
             </SheetContent>
           </Sheet>
