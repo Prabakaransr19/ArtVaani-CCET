@@ -18,6 +18,7 @@ import type { UserProfile } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { ReviewForm } from '@/components/review-form';
 import { ProductReviews } from '@/components/product-reviews';
+import { SimilarProducts } from '@/components/similar-products';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -25,7 +26,6 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [artisan, setArtisan] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [reviews, setReviews] = useState<Review[]>([]);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { user, profile } = useAuth();
@@ -35,18 +35,20 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     if (id) {
+      setLoading(true);
       const fetchProductAndArtisan = async () => {
-        setLoading(true);
         const fetchedProduct = await getProductById(id);
         
-        if (fetchedProduct && fetchedProduct.artisanId) {
-            const userDocRef = doc(db, 'users', fetchedProduct.artisanId);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                setArtisan(userDoc.data() as UserProfile);
+        if (fetchedProduct) {
+            setProduct(fetchedProduct);
+            if (fetchedProduct.artisanId) {
+                const userDocRef = doc(db, 'users', fetchedProduct.artisanId);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    setArtisan(userDoc.data() as UserProfile);
+                }
             }
         }
-        setProduct(fetchedProduct);
         setLoading(false);
       };
       fetchProductAndArtisan();
@@ -54,7 +56,6 @@ export default function ProductDetailPage() {
       const q = query(collection(db, 'products', id, 'reviews'), orderBy('createdAt', 'desc'));
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const fetchedReviews = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}) as Review);
-        setReviews(fetchedReviews);
         if (user && fetchedReviews.some(r => r.userId === user.uid)) {
             setHasReviewed(true);
         }
@@ -156,6 +157,8 @@ export default function ProductDetailPage() {
       {hasPurchased && !hasReviewed && (
           <ReviewForm productId={product.id} onReviewSubmitted={handleReviewSubmitted} />
       )}
+
+      <SimilarProducts tags={tags} currentProductId={product.id} />
     </div>
   );
 }

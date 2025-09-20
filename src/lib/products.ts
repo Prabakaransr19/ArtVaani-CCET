@@ -1,7 +1,7 @@
 
 import { Product, Review, ReviewStats } from '@/lib/types';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, getDoc, query, where, orderBy, writeBatch, serverTimestamp, runTransaction } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, query, where, orderBy, writeBatch, serverTimestamp, runTransaction, limit } from 'firebase/firestore';
 
 // Function to fetch all PUBLISHED products from Firestore
 export async function getProducts(): Promise<Product[]> {
@@ -50,6 +50,34 @@ export async function getMyProducts(userId: string): Promise<Product[]> {
         return [];
     }
 }
+
+// Function to get similar products based on tags
+export async function getSimilarProducts(tags: string[], currentProductId: string): Promise<Product[]> {
+  if (!tags || tags.length === 0) {
+    return [];
+  }
+  try {
+    const productsRef = collection(db, 'products');
+    const q = query(
+      productsRef,
+      where('status', '==', 'published'),
+      where('aiTags', 'array-contains-any', tags),
+      limit(7) // Fetch a bit more to filter out the current product
+    );
+
+    const querySnapshot = await getDocs(q);
+    const similarProducts = querySnapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() } as Product))
+      .filter(product => product.id !== currentProductId) // Exclude the current product
+      .slice(0, 6); // Limit to 6 results
+
+    return similarProducts;
+  } catch (error) {
+    console.error("Error fetching similar products:", error);
+    return [];
+  }
+}
+
 
 export async function submitReview(
   productId: string,
