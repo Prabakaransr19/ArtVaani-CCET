@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { getProductById } from '@/lib/products';
 import { Product, Review } from '@/lib/types';
@@ -24,6 +24,7 @@ import { ArtistStatusBadge } from '@/components/artist-status-badge';
 export default function ProductDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [artisan, setArtisan] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,10 +88,19 @@ export default function ProductDetailPage() {
   }
   
   const handleAddToCart = () => {
-    addToCart(product);
-    toast({
-      title: `Product added to cart!`,
-    });
+    const success = addToCart(product);
+    if (success) {
+        toast({
+            title: `Product added to cart!`,
+        });
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Please log in',
+            description: 'You need to be logged in to add items to your cart.',
+        });
+        router.push('/login');
+    }
   };
 
   const handleReviewSubmitted = () => {

@@ -10,6 +10,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import type { Product } from "@/lib/types";
 import { toast } from "@/hooks/use-toast";
 import { ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   product: Product;
@@ -18,13 +19,23 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { t } = useTranslation();
+  const router = useRouter();
 
   const handleAddToCart = () => {
-    addToCart(product);
-    toast({
-      title: `Product added to cart!`,
-      description: "You can view your cart by clicking the bag icon.",
-    });
+    const success = addToCart(product);
+    if (success) {
+        toast({
+          title: `Product added to cart!`,
+          description: "You can view your cart by clicking the bag icon.",
+        });
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Please log in',
+            description: 'You need to be logged in to add items to your cart.',
+        });
+        router.push('/login');
+    }
   };
   
   const price = product.aiPrice || product.price || 0;

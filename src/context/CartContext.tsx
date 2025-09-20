@@ -16,7 +16,7 @@ import { getProductById } from '@/lib/products';
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number) => boolean;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -80,8 +80,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
 
   const addToCart = useCallback(
-    async (product: Product, quantity: number = 1) => {
-      if (!user) return;
+    (product: Product, quantity: number = 1): boolean => {
+      if (!user) {
+        return false;
+      }
       
       const existingItem = userCart.find((item) => item.productId === product.id);
       let newCart: UserCartItem[];
@@ -95,7 +97,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } else {
         newCart = [...userCart, { productId: product.id, quantity }];
       }
-      await updateUserCartInFirestore(newCart);
+      updateUserCartInFirestore(newCart);
+      return true;
     },
     [user, userCart]
   );
