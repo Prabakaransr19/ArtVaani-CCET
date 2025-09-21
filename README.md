@@ -44,7 +44,12 @@ The platform is designed to make it incredibly simple for artisans, regardless o
     - Edit existing product details.
     - Manage their profile.
 
-4.  **Identity Verification**: To build trust on the platform, artisans can complete a one-time verification process. The AI-assisted flow uses a live photo and GPS location to confirm the artisan's identity against their profile details.
+4.  **AI-Assisted Identity Verification**: To build trust, artisans complete a one-time verification. The process combines a live photo, GPS location, and profile data, which is analyzed by an AI agent to confirm the artisan's identity.
+    - **Data Collection:** The artisan provides a live photo from their device's camera and grants access to their current GPS location.
+    - **AI Analysis:** The system sends this data, along with the city listed in the artisan's profile, to a specialized AI flow.
+    - **Location Cross-Reference:** The AI uses a tool to convert the raw GPS coordinates into a city name. It then compares this detected city with the city the artisan entered in their profile.
+    - **Photo Context Analysis:** The AI examines the background of the live photo, looking for environmental cues (like architecture or flora) to determine if it's plausible for the claimed location.
+    - **Decision:** Verification is successful only if the GPS-derived city matches the profile city AND the photo background is deemed consistent. If not, a reason for the failure is provided.
 
 ### For Customers: The Buyer Experience
 
@@ -66,4 +71,3 @@ Customers get a seamless shopping experience enriched with cultural context.
 5.  **Multilingual Support**: The user interface supports multiple languages, making the platform accessible to a broader audience.
 
 ---
-
