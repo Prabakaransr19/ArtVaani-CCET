@@ -133,7 +133,7 @@ export default function ProfilePage() {
             if (isKarur) {
                 toast({ title: "Verification Successful!", description: "You are now a verified artisan." });
             } else {
-                toast({ variant: 'destructive', title: "Verification Failed", description: `Verification failed. Artisan must be located in Karur.` });
+                toast({ variant: 'destructive', title: "Verification Failed", description: `Location not matching` });
             }
         } catch (e) {
             console.error(e);
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                         <ShieldAlert className="h-4 w-4" />
                         <AlertTitle>Verification Failed</AlertTitle>
                         <AlertDescription>
-                            Your previous verification attempt was not successful. Please ensure your city is set to 'Karur' and try again.
+                           Location not matching
                         </AlertDescription>
                     </Alert>
                 )}
@@ -250,6 +250,8 @@ export default function ProfilePage() {
       </div>
     </div>
   );
+
+    
 
     
 
