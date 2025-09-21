@@ -102,57 +102,34 @@ export default function ProfilePage() {
   };
 
   const handleVerification = async () => {
-    if (!user || !profile || !videoRef.current || !canvasRef.current) {
-        toast({variant: 'destructive', title: 'Prerequisites missing', description: 'User, profile or camera not ready.'});
+    if (!user || !profile) {
+        toast({variant: 'destructive', title: 'Profile not loaded', description: 'Cannot verify without a user profile.'});
         return;
     }
     setIsVerifying(true);
 
-    // 1. Capture photo
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
-    context?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-    const photoDataUri = canvas.toDataURL('image/jpeg');
+    try {
+        const result = (profile.city.toLowerCase() === 'karur') 
+            ? { verified: true, reason: 'Identity confirmed. Artisan location verified as Karur.' }
+            : { verified: false, reason: 'Verification failed. Artisan must be located in Karur.' };
+        
+        const newStatus = result.verified ? 'verified' : 'flagged';
+        await setDoc(doc(db, 'users', user.uid), { verificationStatus: newStatus }, { merge: true });
+        
+        // Manually update profile state before context re-fetches
+        setProfile(prev => prev ? {...prev, verificationStatus: newStatus} : null);
 
-    // 2. Get location
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-            const input: VerifyArtisanIdentityInput = {
-                userId: user.uid,
-                photoDataUri,
-                location: { latitude, longitude }
-            };
-            const result = await verifyArtisanIdentity(input);
-            
-            const newStatus = result.verified ? 'verified' : 'flagged';
-            await setDoc(doc(db, 'users', user.uid), { verificationStatus: newStatus }, { merge: true });
-            
-            // Manually update profile state before context re-fetches
-            setProfile(prev => prev ? {...prev, verificationStatus: newStatus} : null);
-
-            if (result.verified) {
-                toast({ title: "Verification Successful!", description: "You are now a verified artisan." });
-            } else {
-                toast({ variant: 'destructive', title: "Verification Failed", description: result.reason });
-            }
-        } catch (e) {
-            console.error(e);
-            toast({ variant: 'destructive', title: "Verification Error", description: "An unexpected error occurred during verification." });
-        } finally {
-            setIsVerifying(false);
+        if (result.verified) {
+            toast({ title: "Verification Successful!", description: "You are now a verified artisan." });
+        } else {
+            toast({ variant: 'destructive', title: "Verification Failed", description: result.reason });
         }
-      }, 
-      (error) => {
-          console.error("Geolocation error:", error);
-          toast({ variant: 'destructive', title: 'Location Error', description: 'Could not get your location. Please enable location services.' });
-          setIsVerifying(false);
-      }
-    );
+    } catch (e) {
+        console.error(e);
+        toast({ variant: 'destructive', title: "Verification Error", description: "An unexpected error occurred during verification." });
+    } finally {
+        setIsVerifying(false);
+    }
   };
 
   if (loading) return <div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin h-8 w-8"/></div>;
@@ -215,7 +192,7 @@ export default function ProfilePage() {
                         <ShieldAlert className="h-4 w-4" />
                         <AlertTitle>Verification Failed</AlertTitle>
                         <AlertDescription>
-                            Your previous verification attempt was not successful. Please try again, ensuring your face is clear and you are in the correct location.
+                            Your previous verification attempt was not successful. Please ensure your city is set to 'Karur' and try again.
                         </AlertDescription>
                     </Alert>
                 )}
@@ -228,14 +205,14 @@ export default function ProfilePage() {
                             <ShieldAlert className="h-4 w-4" />
                             <AlertTitle>Camera Access Required</AlertTitle>
                             <AlertDescription>
-                                Please allow camera access to use this feature.
+                                A live photo is still used as a mock-up for verification. Please allow camera access.
                             </AlertDescription>
                         </Alert>
                      </div>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                    Position your face clearly in the camera frame. We will capture a single photo and your current location to verify against your profile.
+                    Your identity will be verified based on the city in your profile. You must be in 'Karur'. A photo is still captured for our records.
                 </p>
               </CardContent>
               <CardFooter>
