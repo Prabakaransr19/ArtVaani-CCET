@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -103,33 +103,56 @@ export default function ProfilePage() {
 
   const handleVerification = async () => {
     if (!user || !profile) {
-        toast({variant: 'destructive', title: 'Profile not loaded', description: 'Cannot verify without a user profile.'});
+        toast({variant: 'destructive', title: 'Profile not loaded'});
         return;
     }
     setIsVerifying(true);
 
-    try {
-        const result = (profile.city.toLowerCase() === 'karur') 
-            ? { verified: true, reason: 'Identity confirmed. Artisan location verified as Karur.' }
-            : { verified: false, reason: 'Verification failed. Artisan must be located in Karur.' };
-        
-        const newStatus = result.verified ? 'verified' : 'flagged';
-        await setDoc(doc(db, 'users', user.uid), { verificationStatus: newStatus }, { merge: true });
-        
-        // Manually update profile state before context re-fetches
-        setProfile(prev => prev ? {...prev, verificationStatus: newStatus} : null);
+    const performVerification = async (coords: GeolocationCoordinates | null) => {
+        try {
+            const userDocRef = doc(db, 'users', user.uid);
+            let updateData: any = {};
 
-        if (result.verified) {
-            toast({ title: "Verification Successful!", description: "You are now a verified artisan." });
-        } else {
-            toast({ variant: 'destructive', title: "Verification Failed", description: result.reason });
+            if (coords) {
+                updateData.lastKnownCoords = {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
+                };
+                updateData.lastVerifiedAt = serverTimestamp();
+            }
+
+            const isKarur = profile.city.toLowerCase() === 'karur';
+            const newStatus = isKarur ? 'verified' : 'flagged';
+            updateData.verificationStatus = newStatus;
+
+            await setDoc(userDocRef, updateData, { merge: true });
+            
+            // Manually update profile state before context re-fetches
+            setProfile(prev => prev ? {...prev, verificationStatus: newStatus} : null);
+
+            if (isKarur) {
+                toast({ title: "Verification Successful!", description: "You are now a verified artisan." });
+            } else {
+                toast({ variant: 'destructive', title: "Verification Failed", description: `Verification failed. Artisan must be located in Karur.` });
+            }
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Verification Error", description: "An unexpected error occurred during verification." });
+        } finally {
+            setIsVerifying(false);
         }
-    } catch (e) {
-        console.error(e);
-        toast({ variant: 'destructive', title: "Verification Error", description: "An unexpected error occurred during verification." });
-    } finally {
-        setIsVerifying(false);
-    }
+    };
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            performVerification(position.coords);
+        },
+        (error) => {
+            console.error("Error fetching location:", error);
+            toast({variant: 'destructive', title: 'Could not get location', description: 'Proceeding with verification without location data.'});
+            performVerification(null);
+        }
+    );
   };
 
   if (loading) return <div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin h-8 w-8"/></div>;

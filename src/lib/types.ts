@@ -66,6 +66,11 @@ export interface UserProfile {
     cart: UserCartItem[];
     purchasedProductIds?: string[];
     profileImage: string;
+    lastKnownCoords?: {
+        latitude: number;
+        longitude: number;
+    };
+    lastVerifiedAt?: FieldValue;
 }
 
 export interface Story {
