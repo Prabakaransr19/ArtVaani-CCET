@@ -4,15 +4,16 @@ import { createContext, useState, type ReactNode, useCallback } from 'react';
 import { languages, defaultLang, type LanguageCode } from '@/locales/languages';
 import en from '@/locales/en.json';
 import hi from '@/locales/hi.json';
+import ta from '@/locales/ta.json';
 // Import other languages here if they are created
 
 const translations: Record<LanguageCode, typeof en> = {
   en,
   hi,
+  ta,
   bn: hi as any, // Fallback to hindi for now
   te: hi as any,
   mr: hi as any,
-  ta: hi as any,
   kn: hi as any,
 };
 
