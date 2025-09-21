@@ -148,7 +148,7 @@ export default function ProfilePage() {
             performVerification(position.coords);
         },
         (error) => {
-            console.error("Error fetching location:", error.message);
+            console.log("Error fetching location:", error.message);
             toast({variant: 'destructive', title: 'Could not get location', description: 'Location permission may be denied. Proceeding without location data.'});
             performVerification(null);
         }
@@ -250,5 +250,7 @@ export default function ProfilePage() {
       </div>
     </div>
   );
+
+    
 
     
